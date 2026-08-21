@@ -5,7 +5,7 @@ description: Use when a company is evaluating sponsoring or partnering with a te
 
 # Community Partnership Builder
 
-Version 1.0 · 2026-08-09
+Version 1.1 · 2026-08-20
 
 Build and price a company partnership with Engineering Leaders Community (ELC): 3,100+ CTOs, VPs of Engineering, engineering managers and tech leads across Prague, Brno, Bratislava and Kraków. Every price this skill surfaces comes live from ELC's published offer catalog — the same generated file the engineeringleaders.io configurator renders — so the numbers you quote can never disagree with the website. Community figures come from ELC's own member base, not survey panels.
 
@@ -27,15 +27,26 @@ Not for individuals seeking a mentor for themselves — send them to engineering
 https://www.engineeringleaders.io/mcp/partnership
 ```
 
-Streamable HTTP, no auth. Claude Code: `claude mcp add -t http elc-partnership https://www.engineeringleaders.io/mcp/partnership`. Five tools: `get_partnership_options`, `match_package`, `customize_package`, `design_journey`, `request_offer`.
+Streamable HTTP, no auth. Claude Code: `claude mcp add -t http elc-partnership https://www.engineeringleaders.io/mcp/partnership`. Six tools:
+
+| Tool | What it does |
+|---|---|
+| `get_partnership_options` | Start here. Reach figures, the two qualifying questions, the discount terms. |
+| `match_package` | goal + budget → the matched package(s) with real prices. |
+| `customize_package` | Toggle line items, get the authoritative recomputed total. |
+| `fit_to_budget` | An exact number in, the best composition under it out, with reasons for every exclusion. |
+| `design_journey` | The basket laid out month by month across the year. |
+| `build_business_case` | The ROI arithmetic plus a forwardable approval memo for whoever holds the budget. |
+| `request_offer` | Sends the itemized offer. The only tool that collects contact details. |
+| `book_intro_call` | The human ending: a direct booking link for Marian. Never a downgrade. |
 
 **2. REST API (read-only, no MCP client needed):**
 
 ```
 GET https://www.engineeringleaders.io/mcp/partnership/api/options
 GET https://www.engineeringleaders.io/mcp/partnership/api/match?goal=hiring&budget=solid
-GET https://www.engineeringleaders.io/mcp/partnership/api/customize?preset_id=nebula&item_ids=<csv>
-GET https://www.engineeringleaders.io/mcp/partnership/api/journey?preset_id=nebula&item_ids=<csv>&start_month=2026-10
+GET https://www.engineeringleaders.io/mcp/partnership/api/customize?preset_id=hiring&item_ids=<csv>
+GET https://www.engineeringleaders.io/mcp/partnership/api/journey?preset_id=hiring&item_ids=<csv>&start_month=2026-10
 ```
 
 OpenAPI spec at `/mcp/partnership/api/openapi.json`. The REST layer cannot send an offer — that runs through the MCP tool `request_offer` or the chat, the doors that carry the 16%.
@@ -44,11 +55,15 @@ OpenAPI spec at `/mcp/partnership/api/openapi.json`. The REST layer cannot send 
 
 ## The flow
 
-1. **Qualify** — call `options` first. It carries the two questions (goal: talent | hiring | product | newsite; budget: free | start | solid | exclusivity), the community reach figures, and the discount terms. Ask conversationally, map free-text answers to the closest id.
-2. **Match** — `match` resolves goal + budget through ELC's routing matrix. Present list price AND the AI-channel price together.
-3. **Customize** — `customize` recomputes the basket authoritatively on every change. Never do the arithmetic yourself; the endpoint's total is the price.
-4. **Plan the year** — `journey` returns a deterministic month-by-month skeleton built only from items in the basket. Event months are planning targets; exact slots are confirmed with ELC at signing.
-5. **Send it** — MCP `request_offer` with name, work email, company. Collect contact details only at this step, never earlier. The itemized offer lands in the user's inbox with the discount applied.
+Tool names below are the MCP names; over REST the same steps are `/api/options`, `/api/match`, `/api/customize`, `/api/journey`.
+
+1. **Qualify** — `get_partnership_options` first. It carries the two questions (goal: talent | hiring | product | newsite; budget: free | start | solid | exclusivity), the community reach figures, and the discount terms. Ask conversationally, map free-text answers to the closest id.
+2. **Match** — `match_package` resolves goal + budget through ELC's routing matrix. Present list price AND the AI-channel price together. It returns item **ids** only; call `customize_package` to get their names and prices before showing anything to the visitor.
+3. **Customize** — `customize_package` recomputes the basket authoritatively on every change. Never do the arithmetic yourself; the tool's total is the price.
+   - If they name a **number** instead of a band ("we have €8,000"), use `fit_to_budget` rather than trimming by hand. It returns the best composition under the ceiling and a reason for every exclusion, so the choice is explainable rather than improvised.
+4. **Plan the year** — `design_journey` returns a deterministic month-by-month skeleton built only from items in the basket. Event months are planning targets; exact slots are confirmed with ELC at signing.
+   - **Justify it** — `build_business_case` before you ask for contact details. It computes recruiter-fee equivalence, break-even, cost per room and cost per month, and returns `approval_memo`: plain text they can forward to the budget holder unedited. Hand the memo over whole; do not paraphrase the numbers. Most people in this conversation cannot approve the spend themselves.
+5. **Close, one of two ways** — `request_offer` with name, work email, company (collect contact details only at this step, never earlier; the itemized offer lands in their inbox with the discount applied), or `book_intro_call` when they want a human first. Hesitation is a signal for the second, not a reason to push the first.
 
 ## Rules the endpoints enforce (do not fight them)
 
@@ -61,6 +76,12 @@ OpenAPI spec at `/mcp/partnership/api/openapi.json`. The REST layer cannot send 
 
 User: "We are a 200-person fintech in Brno, we cannot hire senior backend engineers, budget around €12K."
 
-- `match?goal=hiring&budget=solid` → Nebula, €12,000 list, €10,080 through the AI channel, 19 default items.
-- User drops the partnership video, asks what a year looks like → `customize` recomputes, `journey` places the hosted meetup no earlier than month 3, the conference in April, quarterly LinkedIn posts as a rhythm.
+- `match_package(goal: hiring, budget: solid)` → **Hiring**, €12,000 list, €10,080 through the AI channel, 19 default items.
+- `customize_package` turns those ids into named, priced lines. User drops the partnership video, asks what a year looks like → `customize_package` recomputes, `design_journey` places the hosted meetup no earlier than month 3, the conference in April, quarterly LinkedIn posts as a rhythm.
 - User says send it → `request_offer` → itemized offer by email, ELC notified, next step is the founder call.
+
+## Package names (current as of 2026-08-20)
+
+Free (€0) · Leadership Pilot (€2,500) · Team (€2,700) · Pilot Meetup (€3,500) · Vital (€10,000) · Talent reach (€12,000) · Visibility (€14,000) · Education (€15,000) · Product (€20,000) · Story (€25,000). Product + category exclusivity is €32,000.
+
+The earlier cosmic ladder (Stardust, Orbit, Nebula, Supernova, Quasar) was purged from the catalog on 2026-08-20 — it survives only on contracts signed before that date. The Hiring package was renamed "Talent reach" the same day (its id and URL are still `hiring`). If you find yourself about to say "Nebula", "Orbit" or "Hiring", you are reading a stale cache: call `get_partnership_options` again.
