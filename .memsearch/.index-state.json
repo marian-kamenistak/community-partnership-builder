@@ -1,0 +1,16 @@
+{
+  "collection": "ms_community_partnership_builder_e4635c1d",
+  "failed_files": [],
+  "last_completed_at": "2026-08-21T07:19:35.357723Z",
+  "last_error": "ImportError: ONNX embedding provider requires onnxruntime. Install with: pip install 'memsearch[onnx]' or: uv add 'memsearch[onnx]'",
+  "last_failed_at": "2026-08-21T07:19:35.357723Z",
+  "last_started_at": "2026-08-21T07:19:35.354275Z",
+  "milvus_uri": "~/.memsearch/milvus.db",
+  "operation": "index",
+  "paths": [
+    "/Users/mariankamenistak/My Drive/_business/_1ELC/skills/community-partnership-builder/.memsearch/memory"
+  ],
+  "schema_version": 1,
+  "status": "error",
+  "updated_at": "2026-08-21T07:19:35.357723Z"
+}
