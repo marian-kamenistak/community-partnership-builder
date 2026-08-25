@@ -8,7 +8,7 @@
   "milvus_uri": "~/.memsearch/milvus.db",
   "operation": "index",
   "paths": [
-    "/Users/mariankamenistak/My Drive/_business/_1ELC/skills/community-partnership-builder/.memsearch/memory"
+    "/Users/mariankamenistak/ai/business/elc/skills/community-partnership-builder/.memsearch/memory"
   ],
   "schema_version": 1,
   "status": "error",
