@@ -82,6 +82,6 @@ User: "We are a 200-person fintech in Brno, we cannot hire senior backend engine
 
 ## Package names (current as of 2026-08-20)
 
-Free (€0) · Leadership Pilot (€2,500) · Team (€2,700) · Pilot Meetup (€3,500) · Vital (€10,000) · Talent reach (€12,000) · Visibility (€14,000) · Education (€15,000) · Product (€20,000) · Story (€25,000). Product + category exclusivity is €32,000.
+Free (€0) · Leadership Pilot (€2,500) · Starter (€2,700) · Pilot Meetup (€3,500) · Vital (€10,000) · Talent reach (€12,000) · Visibility (€14,000) · Education (€15,000) · Product (€20,000) · LinkedIn (€25,000). Product + category exclusivity is €32,000.
 
 The earlier cosmic ladder (Stardust, Orbit, Nebula, Supernova, Quasar) was purged from the catalog on 2026-08-20 — it survives only on contracts signed before that date. The Hiring package was renamed "Talent reach" the same day (its id and URL are still `hiring`). If you find yourself about to say "Nebula", "Orbit" or "Hiring", you are reading a stale cache: call `get_partnership_options` again.
